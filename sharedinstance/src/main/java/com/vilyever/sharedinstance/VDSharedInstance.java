@@ -30,7 +30,7 @@ public class VDSharedInstance<T> {
     /* #Private Methods */    
     
     /* #Public Methods */
-    public T getInstance() {
+    public synchronized T getInstance() {
         for (int i = 0; i < Instances.size(); i++) {
             Object instance = Instances.get(i);
             if (instance.getClass() == self.instanceClazz) {
@@ -51,7 +51,7 @@ public class VDSharedInstance<T> {
         return instance;
     }
 
-    public void destoryInstance() {
+    public synchronized void destoryInstance() {
         for (int i = 0; i < Instances.size(); i++) {
             Object instance = Instances.get(i);
             if (instance.getClass() == self.instanceClazz) {
