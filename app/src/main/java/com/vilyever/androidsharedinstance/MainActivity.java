@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        System.out.println("onCreate");
+        System.out.println("onCreate " + MainActivity.class.getName());
 
         Carrier carrier = new Carrier();
 
@@ -68,7 +68,12 @@ public class MainActivity extends AppCompatActivity {
 
     public static class Carrier {
         public Carrier() {
-            TestClass tc = new VDSharedInstance<>(TestClass.class).getInstance();
+            TestClass tc = new VDSharedInstance<>(TestClass.class).getInstance(new VDSharedInstance.InitialDelegate<TestClass>() {
+                @Override
+                public void instanceDidInitial(TestClass instance) {
+                    System.out.println("instanceDidInitial");
+                }
+            });
             tc.identifier = "carrier";
             tc.number = 88;
         }

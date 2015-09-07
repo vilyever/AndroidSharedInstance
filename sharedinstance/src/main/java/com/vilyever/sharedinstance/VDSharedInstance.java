@@ -1,7 +1,15 @@
 package com.vilyever.sharedinstance;
 
+import com.vilyever.reflectkit.VDReflectKit;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * VDSharedInstance
@@ -14,34 +22,48 @@ public class VDSharedInstance<T> {
 
     final Class<T> instanceClazz;
 
-    private static List Instances = new ArrayList();
+    private static Map<String, Object> Instances = new HashMap<>();
 
     /* #Constructors */
     public VDSharedInstance(Class<T> instanceClazz) {
         this.instanceClazz = instanceClazz;
     }
 
-    /* #Overrides */    
-    
-    /* #Accessors */     
-     
-    /* #Delegates */     
-     
-    /* #Private Methods */    
-    
+    /* #Overrides */
+
+    /* #Accessors */
+
+    /* #Delegates */
+
+    /* #Private Methods */
+
     /* #Public Methods */
     public synchronized T getInstance() {
-        for (int i = 0; i < Instances.size(); i++) {
-            Object instance = Instances.get(i);
-            if (instance.getClass() == self.instanceClazz) {
-                return (T) instance;
-            }
+        return getInstance(null);
+    }
+
+    public synchronized T getInstance(InitialDelegate delegate) {
+        if (Instances.containsKey(self.instanceClazz.getName())) {
+            return (T) Instances.get(self.instanceClazz.getName());
         }
 
         T instance;
         try {
             instance = (T) self.instanceClazz.newInstance();
-            Instances.add(instance);
+            Instances.put(self.instanceClazz.getName(), instance);
+
+            ArrayList<Method> methods = VDReflectKit.getMethods(self.instanceClazz);
+            for (Method method : methods) {
+                if (method.getAnnotation(VDInstanceInitial.class) != null) {
+                    method.setAccessible(true);
+                    method.invoke(instance);
+                    break;
+                }
+            }
+
+            if (delegate != null) {
+                delegate.instanceDidInitial(instance);
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -51,21 +73,37 @@ public class VDSharedInstance<T> {
         return instance;
     }
 
+    public synchronized T setInstance(T instance) {
+        return setInstance(instance, false);
+    }
+
+    public synchronized T setInstance(T instance, boolean forceReplace) {
+        if (!Instances.containsKey(self.instanceClazz.getName())
+                || forceReplace) {
+            Instances.put(self.instanceClazz.getName(), instance);
+        }
+
+        return (T) Instances.get(self.instanceClazz.getName());
+    }
+
     public synchronized void destoryInstance() {
-        for (int i = 0; i < Instances.size(); i++) {
-            Object instance = Instances.get(i);
-            if (instance.getClass() == self.instanceClazz) {
-                Instances.remove(instance);
-                break;
-            }
+        if (Instances.containsKey(self.instanceClazz.getName())) {
+            Instances.remove(self.instanceClazz.getName());
         }
     }
 
     /* #Classes */
 
-    /* #Interfaces */     
-     
-    /* #Annotations @interface */    
-    
+    /* #Interfaces */
+    public interface InitialDelegate<T> {
+        void instanceDidInitial(T instance);
+    }
+
+    /* #Annotations @interface */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface VDInstanceInitial {
+    }
+
     /* #Enums */
 }
