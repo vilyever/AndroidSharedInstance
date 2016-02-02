@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
         public Carrier() {
             TestClass tc = new VDSharedInstance<>(TestClass.class).getInstance(new VDSharedInstance.InitialDelegate<TestClass>() {
                 @Override
-                public void instanceDidInitial(TestClass instance) {
-                    System.out.println("instanceDidInitial");
+                public void requireInitial(TestClass instance) {
+                    System.out.println("requireInitial");
                 }
             });
             tc.identifier = "carrier";

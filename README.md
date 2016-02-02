@@ -35,7 +35,7 @@ new VDSharedInstance<>(Carrier.class).setInstance(new Carrier(), true);
 // the delegate will only called once, even get instance with the initial delegate again
 Carrier carrier = new VDSharedInstance<>(Carrier.class).getInstance(new VDSharedInstance.InitialDelegate<Carrier>() {
     @Override
-    public void instanceDidInitial(Carrier instance) {
+    public void requireInitial(Carrier instance) {
         // initial
     }
 });

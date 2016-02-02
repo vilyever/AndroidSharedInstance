@@ -24,24 +24,25 @@ public class VDSharedInstance<T> {
 
     private static Map<String, Object> Instances = new HashMap<>();
 
-    /* #Constructors */
+    /* Constructors */
     public VDSharedInstance(Class<T> instanceClazz) {
         this.instanceClazz = instanceClazz;
     }
 
-    /* #Overrides */
-
-    /* #Accessors */
-
-    /* #Delegates */
-
-    /* #Private Methods */
-
-    /* #Public Methods */
+    /* Public Methods */
+    /** @see #getInstance(InitialDelegate) */
     public synchronized T getInstance() {
         return getInstance(null);
     }
 
+    /**
+     * 获取单例
+     * 若单例此时生成：
+     * 1.单例Class内声明了带有{@link com.vilyever.sharedinstance.VDSharedInstance.VDInstanceInitial}的方法，此方法将被调用
+     * 2.初始化回调不为空，调用初始化回调
+     * @param delegate 初始化回调
+     * @return 单例
+     */
     public synchronized T getInstance(InitialDelegate delegate) {
         if (Instances.containsKey(self.instanceClazz.getName())) {
             return (T) Instances.get(self.instanceClazz.getName());
@@ -62,7 +63,7 @@ public class VDSharedInstance<T> {
             }
 
             if (delegate != null) {
-                delegate.instanceDidInitial(instance);
+                delegate.requireInitial(instance);
             }
         }
         catch (Exception e) {
@@ -73,10 +74,17 @@ public class VDSharedInstance<T> {
         return instance;
     }
 
+    /** @see #setInstance(Object, boolean) */
     public synchronized T setInstance(T instance) {
         return setInstance(instance, false);
     }
 
+    /**
+     * 设置单例
+     * @param instance 单例
+     * @param forceReplace 是否强制替换，若原先存在单例判断是否替换
+     * @return 泛型T对应的单例，可能不是传入的单例
+     */
     public synchronized T setInstance(T instance, boolean forceReplace) {
         if (!Instances.containsKey(self.instanceClazz.getName())
                 || forceReplace) {
@@ -86,24 +94,25 @@ public class VDSharedInstance<T> {
         return (T) Instances.get(self.instanceClazz.getName());
     }
 
+    /**
+     * 销毁单例
+     * 此处仅移除关联
+     * 若其他位置仍持有该单例，则该单例可被gc回收的时机由其他位置决定
+     */
     public synchronized void destoryInstance() {
         if (Instances.containsKey(self.instanceClazz.getName())) {
             Instances.remove(self.instanceClazz.getName());
         }
     }
 
-    /* #Classes */
-
-    /* #Interfaces */
+    /* Interfaces */
     public interface InitialDelegate<T> {
-        void instanceDidInitial(T instance);
+        void requireInitial(T instance);
     }
 
-    /* #Annotations @interface */
+    /* Annotations @interface */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     public @interface VDInstanceInitial {
     }
-
-    /* #Enums */
 }
