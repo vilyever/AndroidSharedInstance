@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.vilyever.sharedinstance.VDSharedInstance;
+import com.vilyever.sharedinstance.SharedInstance;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,8 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
         Carrier carrier = new Carrier();
 
-        System.out.println("identifier " + new VDSharedInstance<>(TestClass.class).getInstance().identifier);
-        System.out.println("number " + new VDSharedInstance<>(TestClass.class).getInstance().number);
+        System.out.println("identifier " + new SharedInstance<>(TestClass.class).getInstance().identifier);
+        System.out.println("number " + new SharedInstance<>(TestClass.class).getInstance().number);
     }
 
     @Override
@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("onResume");
 
-        System.out.println("identifier " + new VDSharedInstance<>(TestClass.class).getInstance().identifier);
-        System.out.println("number " + new VDSharedInstance<>(TestClass.class).getInstance().number);
+        System.out.println("identifier " + new SharedInstance<>(TestClass.class).getInstance().identifier);
+        System.out.println("number " + new SharedInstance<>(TestClass.class).getInstance().number);
     }
 
     @Override
@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("onPause");
 
-        System.out.println("identifier " + new VDSharedInstance<>(TestClass.class).getInstance().identifier);
-        System.out.println("number " + new VDSharedInstance<>(TestClass.class).getInstance().number);
+        System.out.println("identifier " + new SharedInstance<>(TestClass.class).getInstance().identifier);
+        System.out.println("number " + new SharedInstance<>(TestClass.class).getInstance().number);
 
-        new VDSharedInstance<>(TestClass.class).destoryInstance();
+        new SharedInstance<>(TestClass.class).destoryInstance();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static class Carrier {
         public Carrier() {
-            TestClass tc = new VDSharedInstance<>(TestClass.class).getInstance(new VDSharedInstance.InitialDelegate<TestClass>() {
+            TestClass tc = new SharedInstance<>(TestClass.class).getInstance(new SharedInstance.InitialDelegate<TestClass>() {
                 @Override
                 public void requireInitial(TestClass instance) {
                     System.out.println("requireInitial");

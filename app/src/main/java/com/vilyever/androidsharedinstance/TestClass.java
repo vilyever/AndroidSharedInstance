@@ -1,6 +1,6 @@
 package com.vilyever.androidsharedinstance;
 
-import com.vilyever.sharedinstance.VDSharedInstance;
+import com.vilyever.sharedinstance.SharedInstance;
 
 /**
  * TestClass
@@ -23,7 +23,7 @@ public class TestClass {
     /* #Delegates */     
      
     /* #Private Methods */
-    @VDSharedInstance.VDInstanceInitial
+    @SharedInstance.VDInstanceInitial
     private void initial() {
         System.out.println("VDInstanceInitial");
     }

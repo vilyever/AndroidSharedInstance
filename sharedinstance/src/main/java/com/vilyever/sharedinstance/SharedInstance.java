@@ -1,6 +1,6 @@
 package com.vilyever.sharedinstance;
 
-import com.vilyever.reflectkit.VDReflectKit;
+import com.vilyever.reflectkit.ReflectKit;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,20 +12,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * VDSharedInstance
+ * SharedInstance
  * AndroidSharedInstance <com.vilyever.sharedinstance>
  * Created by vilyever on 2015/9/6.
  * Feature:
  */
-public class VDSharedInstance<T> {
-    private final VDSharedInstance self = this;
+public class SharedInstance<T> {
+    private final SharedInstance self = this;
 
     final Class<T> instanceClazz;
 
     private static Map<String, Object> Instances = new HashMap<>();
 
     /* Constructors */
-    public VDSharedInstance(Class<T> instanceClazz) {
+    public SharedInstance(Class<T> instanceClazz) {
         this.instanceClazz = instanceClazz;
     }
 
@@ -38,7 +38,7 @@ public class VDSharedInstance<T> {
     /**
      * 获取单例
      * 若单例此时生成：
-     * 1.单例Class内声明了带有{@link com.vilyever.sharedinstance.VDSharedInstance.VDInstanceInitial}的方法，此方法将被调用
+     * 1.单例Class内声明了带有{@link SharedInstance.VDInstanceInitial}的方法，此方法将被调用
      * 2.初始化回调不为空，调用初始化回调
      * @param delegate 初始化回调
      * @return 单例
@@ -53,7 +53,7 @@ public class VDSharedInstance<T> {
             instance = (T) self.instanceClazz.newInstance();
             Instances.put(self.instanceClazz.getName(), instance);
 
-            ArrayList<Method> methods = VDReflectKit.getMethods(self.instanceClazz);
+            ArrayList<Method> methods = ReflectKit.getMethods(self.instanceClazz);
             for (Method method : methods) {
                 if (method.getAnnotation(VDInstanceInitial.class) != null) {
                     method.setAccessible(true);
