@@ -30,7 +30,7 @@ public class SharedInstance<T> {
     }
 
     /* Public Methods */
-    /** @see #getInstance(InitialDelegate) */
+    /** @see #getInstance(InitDelegate) */
     public synchronized T getInstance() {
         return getInstance(null);
     }
@@ -38,12 +38,12 @@ public class SharedInstance<T> {
     /**
      * 获取单例
      * 若单例此时生成：
-     * 1.单例Class内声明了带有{@link SharedInstance.VDInstanceInitial}的方法，此方法将被调用
+     * 1.单例Class内声明了带有{@link InstanceInit}的方法，此方法将被调用
      * 2.初始化回调不为空，调用初始化回调
      * @param delegate 初始化回调
      * @return 单例
      */
-    public synchronized T getInstance(InitialDelegate delegate) {
+    public synchronized T getInstance(InitDelegate delegate) {
         if (Instances.containsKey(self.instanceClazz.getName())) {
             return (T) Instances.get(self.instanceClazz.getName());
         }
@@ -55,7 +55,7 @@ public class SharedInstance<T> {
 
             ArrayList<Method> methods = ReflectKit.getMethods(self.instanceClazz);
             for (Method method : methods) {
-                if (method.getAnnotation(VDInstanceInitial.class) != null) {
+                if (method.getAnnotation(InstanceInit.class) != null) {
                     method.setAccessible(true);
                     method.invoke(instance);
                     break;
@@ -63,7 +63,7 @@ public class SharedInstance<T> {
             }
 
             if (delegate != null) {
-                delegate.requireInitial(instance);
+                delegate.onInit(instance);
             }
         }
         catch (Exception e) {
@@ -106,13 +106,13 @@ public class SharedInstance<T> {
     }
 
     /* Interfaces */
-    public interface InitialDelegate<T> {
-        void requireInitial(T instance);
+    public interface InitDelegate<T> {
+        void onInit(T instance);
     }
 
     /* Annotations @interface */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface VDInstanceInitial {
+    public @interface InstanceInit {
     }
 }

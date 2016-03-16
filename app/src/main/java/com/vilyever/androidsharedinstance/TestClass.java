@@ -23,9 +23,9 @@ public class TestClass {
     /* #Delegates */     
      
     /* #Private Methods */
-    @SharedInstance.VDInstanceInitial
-    private void initial() {
-        System.out.println("VDInstanceInitial");
+    @SharedInstance.InstanceInit
+    private void init() {
+        System.out.println("InstanceInit");
     }
     
     /* #Public Methods */
