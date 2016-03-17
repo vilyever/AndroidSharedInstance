@@ -17,7 +17,7 @@ Step 2. Add the dependency in the form
 
 ```gradle
 dependencies {
-  compile 'com.github.vilyever:AndroidSharedInstance:1.1.0'
+  compile 'com.github.vilyever:AndroidSharedInstance:1.2.0'
 }
 ```
 
